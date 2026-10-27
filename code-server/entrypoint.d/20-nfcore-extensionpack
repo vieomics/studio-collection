@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+#
+# Ensure the nf-core extension pack exists when a bind-mounted /home/coder
+# hides the extensions baked into the image.
+
+set -e
+
+EXT_ID="nf-core.nf-core-extensionpack"
+EXT_VERSION="${NFCORE_EXTENSIONPACK_VERSION:-0.8.0}"
+
+if ! code-server --list-extensions 2>/dev/null | grep -qx "${EXT_ID}"; then
+    echo "[studio] installing ${EXT_ID}@${EXT_VERSION}"
+    code-server --install-extension "${EXT_ID}@${EXT_VERSION}" --force \
+      || echo "[studio] warning: failed to install ${EXT_ID}" >&2
+fi
