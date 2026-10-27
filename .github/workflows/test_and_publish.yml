@@ -135,8 +135,6 @@ jobs:
       fail-fast: false
       matrix:
         studio: ${{ fromJSON(needs.changes.outputs.studios) }}
-    env:
-      TAG: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || '' }}
 
     steps:
       - name: Checkout

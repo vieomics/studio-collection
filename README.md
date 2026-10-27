@@ -87,7 +87,7 @@ Each studio has its own Makefile. Run these from the studio directory, or with
 Defaults are in [`code-server/Makefile`](code-server/Makefile):
 
 - `VERSION := 4.143.1`
-- `TAG ?= $(VERSION)` (use `TAG=pr-1` for a test tag)
+- `TAG ?= $(VERSION)` (override with `TAG=test-1` for an isolated test tag)
 - `IMAGE_NAME ?= nttg8100/omicslab-code-server`
 - `PORT ?= 8080`
 
@@ -108,12 +108,19 @@ detects changed studio folders and builds them in parallel with a matrix:
 ### Publish a PR image for testing
 
 Add the `publish-docker` label to a pull request to trigger publishing of the
-changed studio images. PR publishes use the tag `pr-<number>` instead of the
-version tag, so they do not overwrite the production tag:
+changed studio images. The tag comes from `VERSION` in the studio Makefile:
 
 ```text
-nttg8100/omicslab-code-server:pr-1
+nttg8100/omicslab-code-server:4.143.1
 ```
+
+A PR label publish uses the same version tag as a `main` publish, so it
+overwrites that tag. Use it only for testing. For an isolated test tag, run
+`make -C code-server publish TAG=test-1` manually.
+
+The Docker Hub token must have **Read & Write** permission and must be able to
+push to the target repository. A read-only token can log in but will fail on
+push with `access token has insufficient scopes`.
 
 The publish job uses the `PROD` GitHub environment. Add these secrets there (or
 as repository secrets):
