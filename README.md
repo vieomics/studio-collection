@@ -49,12 +49,12 @@ docker compose logs -f
 Then open <http://localhost:8080> directly. The image has **no built-in
 authentication**; protect it with the platform/proxy or a private network.
 
-Or use the Makefile:
+Or use the studio Makefile:
 
 ```bash
-make start
-make test
-make stop
+make -C code-server start
+make -C code-server test
+make -C code-server stop
 ```
 
 ## Additional features
@@ -73,32 +73,47 @@ The code-server studio adds:
 
 ## Make targets
 
-Run these from the repository root:
+Each studio has its own Makefile. Run these from the studio directory, or with
+`make -C <studio>` from the repository root:
 
 | Target | Description |
 | --- | --- |
-| `make dev` | Build `$(IMAGE_NAME):$(VERSION)` |
-| `make start` | Build and run the container as `code-server-dev` on port `8080` |
+| `make dev` | Build `$(IMAGE_NAME):$(TAG)` |
+| `make start` | Build and run the container as `<studio>-dev` on port `8080` |
 | `make test` | Check health, no-login mode, zsh/plugins, nf-core extensions, Pixi, and OpenCode |
-| `make stop` | Remove `code-server-dev` |
-| `make publish` | Build and push `$(IMAGE_NAME):$(VERSION)` to Docker Hub |
+| `make stop` | Remove the studio container |
+| `make publish` | Build and push `$(IMAGE_NAME):$(TAG)` to Docker Hub |
 
-Defaults are in the [`Makefile`](Makefile):
+Defaults are in [`code-server/Makefile`](code-server/Makefile):
 
 - `VERSION := 4.143.1`
+- `TAG ?= $(VERSION)` (use `TAG=pr-1` for a test tag)
 - `IMAGE_NAME ?= nttg8100/omicslab-code-server`
 - `PORT ?= 8080`
 
-Use `make start PORT=18080` if port 8080 is already in use. Override the image
-name with `make publish IMAGE_NAME=<dockerhub-user>/<repo>`.
+Use `make -C code-server start PORT=18080` if port 8080 is already in use.
+Override the image name with `make -C code-server publish IMAGE_NAME=<dockerhub-user>/<repo>`.
 
 ## Docker Hub CI
 
 The workflow [`.github/workflows/test_and_publish.yml`](.github/workflows/test_and_publish.yml)
-follows the same Makefile-driven pattern:
+detects changed studio folders and builds them in parallel with a matrix:
 
-- **Pull requests to `main`**: build, start, and test the image.
-- **Push to `main`**: build, test, then publish to Docker Hub.
+- A studio is any top-level folder containing a `Makefile`.
+- **Pull requests to `main`**: build, start, and test every changed studio.
+- **Push to `main`**: build, test, and publish every changed studio.
+- A workflow-file change selects all studios.
+- Manual dispatch selects all studios.
+
+### Publish a PR image for testing
+
+Add the `publish-docker` label to a pull request to trigger publishing of the
+changed studio images. PR publishes use the tag `pr-<number>` instead of the
+version tag, so they do not overwrite the production tag:
+
+```text
+nttg8100/omicslab-code-server:pr-1
+```
 
 The publish job uses the `PROD` GitHub environment. Add these secrets there (or
 as repository secrets):
@@ -108,9 +123,11 @@ as repository secrets):
 | `DOCKERHUB_USERNAME` | Docker Hub account name |
 | `DOCKERHUB_TOKEN` | Docker Hub access token with Read & Write permission |
 
-The image name and version come from the `Makefile`:
-`nttg8100/omicslab-code-server:4.143.1` by default. Create the Docker Hub
-repository first, or change `IMAGE_NAME` in the Makefile before publishing.
+The image name and version come from each studio's Makefile:
+`nttg8100/omicslab-code-server:4.143.1` for `code-server` by default. Create
+the Docker Hub repository first, or change `IMAGE_NAME` in the Makefile before
+publishing. PR labels only publish for branches in this repository; fork PRs
+cannot access the `PROD` secrets.
 
 ## Licensing
 
@@ -137,7 +154,11 @@ the detailed notices.
 
 1. Create `<studio>/`.
 2. Pin the upstream image in `FROM`.
-3. Copy the `code-server` scaffold (`Dockerfile`, `compose.yaml`,
+3. Copy the `code-server` scaffold (`Dockerfile`, `Makefile`, `compose.yaml`,
    `.env.example`, `.dockerignore`).
-4. Replace the inventory in `README.md` with the new image's actual contents.
-5. Add the studio to the table above.
+4. Set `VERSION` and `IMAGE_NAME` in the new `Makefile`.
+5. Replace the inventory in `README.md` with the new image's actual contents.
+6. Add the studio to the table above.
+
+The CI discovers studios by finding top-level folders with a `Makefile`, so no
+workflow edit is needed when a new studio is added.

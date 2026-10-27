@@ -1,10 +1,14 @@
 VERSION := 4.143.1
+TAG ?= $(VERSION)
+ifeq ($(strip $(TAG)),)
+TAG := $(VERSION)
+endif
 IMAGE_NAME ?= nttg8100/omicslab-code-server
-IMAGE := $(IMAGE_NAME):$(VERSION)
+IMAGE := $(IMAGE_NAME):$(TAG)
 
-CONTEXT := code-server
-DOCKERFILE := code-server/Dockerfile
-CONTAINER := code-server-dev
+CONTEXT := .
+DOCKERFILE := Dockerfile
+CONTAINER ?= $(notdir $(CURDIR))-dev
 PORT ?= 8080
 
 PIXI_VERSION ?= 0.83.0
