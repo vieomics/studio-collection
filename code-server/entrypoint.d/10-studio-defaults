@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+#
+# First-boot defaults. The upstream entrypoint runs executable files in
+# /entrypoint.d before starting code-server.
+
+set -euo pipefail
+
+HOME="${HOME:-/home/coder}"
+SETTINGS_DIR="${HOME}/.local/share/code-server/User"
+SETTINGS_FILE="${SETTINGS_DIR}/settings.json"
+
+mkdir -p "${SETTINGS_DIR}"
+
+if [[ ! -f "${SETTINGS_FILE}" ]]; then
+    cat > "${SETTINGS_FILE}" <<'JSON'
+{
+  "workbench.colorTheme": "Dark Modern",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "/usr/bin/zsh"
+    }
+  }
+}
+JSON
+fi

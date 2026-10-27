@@ -1,0 +1,7 @@
+README.md
+compose.yaml
+.env
+.env.*
+data/
+.git
+.gitignore

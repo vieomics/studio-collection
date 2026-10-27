@@ -1,0 +1,28 @@
+# Omicslab code-server zsh defaults.
+# Appended to the system-wide /etc/zsh/zshrc so it works even when
+# /home/coder is a mounted volume.
+
+export ZSH="/opt/oh-my-zsh"
+
+ZSH_THEME="robbyrussell"
+plugins=(
+  git
+  docker
+  docker-compose
+  history
+  rsync
+  safe-paste
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+DISABLE_AUTO_UPDATE="true"
+DISABLE_UPDATE_PROMPT="true"
+ZSH_DISABLE_COMPFIX="true"
+
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY
+
+source "$ZSH/oh-my-zsh.sh"
