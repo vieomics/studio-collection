@@ -60,23 +60,28 @@ RUN set -eux; \
       PIXI_NO_PATH_UPDATE=1 \
       PIXI_NO_TELEMETRY=1 \
       sh; \
-    pixi --version
+    pixi --version; \
+    rm -rf /tmp/pixi* /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # Pixi R 4.6.1 environment with conda-forge and bioconda.
 RUN set -eux; \
+    export PIXI_CACHE_DIR=/tmp/pixi-cache; \
     pixi init /opt/r-pixi --channel conda-forge --channel bioconda; \
     cd /opt/r-pixi; \
     pixi add "r-base=${R_PIXI_VERSION}"; \
-    pixi run R --version | head -2
+    pixi run R --version | head -2; \
+    rm -rf /tmp/pixi-cache /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # rstudioapi is needed by the RStudio IDE; BiocManager is the standard
 # fallback for Bioconductor packages not available as R 4.6.1 Pixi builds.
 RUN set -eux; \
+    export PIXI_CACHE_DIR=/tmp/pixi-cache; \
     cd /opt/r-pixi; \
     pixi run Rscript -e 'install.packages(c("rstudioapi", "BiocManager"), repos = "https://cloud.r-project.org")'; \
     pixi run Rscript -e 'stopifnot(requireNamespace("rstudioapi", quietly = TRUE)); stopifnot(requireNamespace("BiocManager", quietly = TRUE))'; \
     touch /opt/r-pixi/.pixi/envs/default/lib/R/etc/Renviron.site; \
-    chown -R rstudio:rstudio /opt/r-pixi
+    chown -R rstudio:rstudio /opt/r-pixi; \
+    rm -rf /tmp/pixi-cache /tmp/Rtmp* /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # Zsh + Oh My Zsh, installed system-wide so a home volume does not hide it.
 COPY --chmod=644 zsh/zshrc /etc/zsh/zshrc.omz

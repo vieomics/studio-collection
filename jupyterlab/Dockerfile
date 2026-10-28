@@ -72,10 +72,12 @@ RUN set -eux; \
       PIXI_NO_PATH_UPDATE=1 \
       PIXI_NO_TELEMETRY=1 \
       sh; \
-    pixi --version
+    pixi --version; \
+    rm -rf /tmp/pixi* /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # Pixi JupyterLab + Python kernel
 RUN set -eux; \
+    export PIXI_CACHE_DIR=/tmp/pixi-cache; \
     pixi init /opt/jupyter --channel conda-forge; \
     cd /opt/jupyter; \
     pixi add "python=${PYTHON_VERSION}" "jupyterlab=4.6.4" ipykernel; \
@@ -84,15 +86,18 @@ RUN set -eux; \
       --name python-pixi \
       --display-name "Python (Pixi)"; \
     rm -rf /opt/jupyter/.pixi/envs/default/share/jupyter/kernels/python3; \
-    rm -rf /opt/jupyter/.pixi/envs/default/lib/python*/site-packages/ipykernel/resources
+    rm -rf /opt/jupyter/.pixi/envs/default/lib/python*/site-packages/ipykernel/resources; \
+    rm -rf /tmp/pixi-cache /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # Pixi R kernel
 RUN set -eux; \
+    export PIXI_CACHE_DIR=/tmp/pixi-cache; \
     pixi init /opt/r-kernel --channel conda-forge; \
     cd /opt/r-kernel; \
     pixi add "r-base=${R_VERSION}" r-irkernel; \
     PATH="/opt/jupyter/.pixi/envs/default/bin:${PATH}" \
-      pixi run Rscript -e 'IRkernel::installspec(name = "ir-pixi", displayname = "R (Pixi)", user = FALSE)'
+      pixi run Rscript -e 'IRkernel::installspec(name = "ir-pixi", displayname = "R (Pixi)", user = FALSE)'; \
+    rm -rf /tmp/pixi-cache /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 # Zsh + Oh My Zsh, installed system-wide so a home volume does not hide it.
 COPY --chmod=644 zsh/zshrc /etc/zsh/zshrc.omz

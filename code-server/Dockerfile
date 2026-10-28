@@ -48,7 +48,8 @@ RUN set -eux; \
       PIXI_NO_PATH_UPDATE=1 \
       PIXI_NO_TELEMETRY=1 \
       sh; \
-    pixi --version
+    pixi --version; \
+    rm -rf /tmp/pixi* /root/.cache/rattler /root/.cache/pixi /root/.pixi
 
 RUN set -eux; \
     mkdir -p /opt/opencode; \
