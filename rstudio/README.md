@@ -35,7 +35,8 @@ same zsh/Oh My Zsh setup as the code-server studio.
   `docker-compose`, `history`, `rsync`, `safe-paste`, `zsh-autosuggestions`,
   and `zsh-syntax-highlighting`
 - **Pixi 0.83.0** at `/opt/pixi/bin/pixi`
-- **Pixi R 4.6.1 environment** at `/opt/r-pixi`, with `rstudioapi` installed
+- **Pixi R 4.6.1 environment** at `/opt/r-pixi`, using `conda-forge` and
+  `bioconda`, with `rstudioapi` and `BiocManager` installed
 - RStudio Server is configured to use
   `/opt/r-pixi/.pixi/envs/default/bin/R`
 - RStudio's terminal preference is zsh
@@ -55,9 +56,28 @@ cd /opt/r-pixi
 pixi add r-<package>
 ```
 
-This updates the Pixi environment used by RStudio. It works when conda-forge
-has a build for R 4.6.1. Some R packages are still built only for older R
-versions; for example, `pixi add r-jsonlite` fails to solve against R 4.6.1.
+The environment uses both `conda-forge` and `bioconda`. This updates the Pixi
+environment used by RStudio. It works when the channels have a build for R
+4.6.1. Some R packages are still built only for older R versions; for example,
+`pixi add r-jsonlite` fails to solve against R 4.6.1.
+
+For Bioconductor packages, try Pixi first:
+
+```bash
+pixi add bioconductor-<package>
+```
+
+The `bioconda` channel is enabled, but current bioconda builds target R 4.5.
+For example, `pixi add bioconductor-biocgenerics` resolves to a build that
+requires `r-base >=4.5,<4.6`, so it cannot be added to the R 4.6.1 environment.
+Use `BiocManager` from the RStudio console instead:
+
+```r
+BiocManager::install("<package>")
+```
+
+`BiocManager` is installed in the Pixi R environment. `BiocManager::install("BiocGenerics")`
+was verified successfully.
 
 ### Install with CRAN
 
@@ -122,6 +142,7 @@ The image is a multi-license aggregate. It is **not MIT-only**.
 | rocker/rstudio image scripts | GPL-2.0-or-later | Upstream: <https://github.com/rocker-org/rocker-versioned2>. |
 | Ubuntu base packages | GPL/LGPL/mixed | See `/usr/share/doc/*/copyright`. |
 | Pixi | BSD-3-Clause | Keep the copyright notice and disclaimer. |
+| BiocManager | Artistic-2.0 | Installed from CRAN; keep the R package license. |
 | Oh My Zsh | MIT | Keep the license text. |
 | zsh-autosuggestions | MIT | Keep the license text. |
 | zsh-syntax-highlighting | BSD-3-Clause | Keep the copyright notice and disclaimer. |

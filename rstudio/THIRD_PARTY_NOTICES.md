@@ -32,8 +32,8 @@ image.
 | --- | --- | --- | --- |
 | Pixi | 0.83.0 | BSD-3-Clause | <https://github.com/prefix-dev/pixi> |
 | Pixi R environment | R 4.6.1 | R GPL-2.0 / GPL-3.0 | <https://github.com/conda-forge/r-base-feedstock> |
-| IRkernel | CRAN | MIT | <https://github.com/IRkernel/IRkernel> |
 | rstudioapi | CRAN | MIT | <https://github.com/rstudio/rstudioapi> |
+| BiocManager | CRAN | Artistic-2.0 | <https://github.com/Bioconductor/BiocManager> |
 | Oh My Zsh | master at build time | MIT | <https://github.com/ohmyzsh/ohmyzsh> |
 | zsh-autosuggestions | master at build time | MIT | <https://github.com/zsh-users/zsh-autosuggestions> |
 | zsh-syntax-highlighting | master at build time | BSD-3-Clause | <https://github.com/zsh-users/zsh-syntax-highlighting> |

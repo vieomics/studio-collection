@@ -45,7 +45,8 @@ test:
 	docker exec $(CONTAINER) zsh -ic 'echo "plugins=($$plugins)"' | grep -q zsh-syntax-highlighting
 	docker exec $(CONTAINER) R --version | grep -q '4.6.1'
 	docker exec $(CONTAINER) sh -c 'command -v R | grep -q /opt/r-pixi'
-	docker exec $(CONTAINER) Rscript -e 'stopifnot(requireNamespace("rstudioapi", quietly = TRUE))'
+	docker exec $(CONTAINER) Rscript -e 'stopifnot(requireNamespace("rstudioapi", quietly = TRUE)); stopifnot(requireNamespace("BiocManager", quietly = TRUE))'
+	docker exec $(CONTAINER) grep -q 'bioconda' /opt/r-pixi/pixi.toml
 	docker exec $(CONTAINER) grep -q 'rsession-which-r=/opt/r-pixi/.pixi/envs/default/bin/R' /etc/rstudio/rserver.conf
 	docker exec $(CONTAINER) sh -c 'ps -ef | grep -q "[r]server"'
 

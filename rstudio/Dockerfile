@@ -62,19 +62,19 @@ RUN set -eux; \
       sh; \
     pixi --version
 
-# Pixi R 4.6.1 environment
+# Pixi R 4.6.1 environment with conda-forge and bioconda.
 RUN set -eux; \
-    pixi init /opt/r-pixi --channel conda-forge; \
+    pixi init /opt/r-pixi --channel conda-forge --channel bioconda; \
     cd /opt/r-pixi; \
     pixi add "r-base=${R_PIXI_VERSION}"; \
     pixi run R --version | head -2
 
-# rstudioapi is needed by the RStudio IDE and is pure R, so it installs
-# cleanly into the Pixi R environment.
+# rstudioapi is needed by the RStudio IDE; BiocManager is the standard
+# fallback for Bioconductor packages not available as R 4.6.1 Pixi builds.
 RUN set -eux; \
     cd /opt/r-pixi; \
-    pixi run Rscript -e 'install.packages("rstudioapi", repos = "https://cloud.r-project.org")'; \
-    pixi run Rscript -e 'stopifnot(requireNamespace("rstudioapi", quietly = TRUE))'; \
+    pixi run Rscript -e 'install.packages(c("rstudioapi", "BiocManager"), repos = "https://cloud.r-project.org")'; \
+    pixi run Rscript -e 'stopifnot(requireNamespace("rstudioapi", quietly = TRUE)); stopifnot(requireNamespace("BiocManager", quietly = TRUE))'; \
     touch /opt/r-pixi/.pixi/envs/default/lib/R/etc/Renviron.site; \
     chown -R rstudio:rstudio /opt/r-pixi
 
