@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+
+name: studio-rstudio
+
+services:
+  rstudio:
+    build:
+      context: .
+      args:
+        RSTUDIO_VERSION: ${RSTUDIO_VERSION:-4.6.1}
+        PIXI_VERSION: ${PIXI_VERSION:-0.83.0}
+        R_PIXI_VERSION: ${R_PIXI_VERSION:-4.6.1}
+    image: studio-collection/rstudio:${RSTUDIO_VERSION:-4.6.1}
+    container_name: studio-rstudio
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+    ports:
+      - "${RSTUDIO_PORT:-8787}:8787"
+    volumes:
+      - ./data:/home/rstudio
+    restart: unless-stopped

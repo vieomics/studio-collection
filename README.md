@@ -10,6 +10,7 @@ setup.
 | Studio | Directory | Base image | Web port | Notes |
 | --- | --- | --- | --- | --- |
 | code-server | [`code-server/`](code-server/) | `codercom/code-server:4.143.1-noble` | `8080` | Root runtime, direct `apt`, Zsh/Oh My Zsh, Pixi, OpenCode, nf-core extension pack, Dark Modern; auth handled by the platform |
+| rstudio | [`rstudio/`](rstudio/) | `rocker/rstudio:4.6.1` | `8787` | RStudio Server with Pixi R 4.6.1, Zsh/Oh My Zsh, CRAN/Pixi package installs; auth handled by the platform |
 
 ## Repository conventions
 
@@ -144,6 +145,9 @@ The images include third-party components under their own licenses:
 | Component | License |
 | --- | --- |
 | code-server and the official image build scripts | MIT |
+| RStudio Server | AGPL-3.0 |
+| R | GPL-2.0 / GPL-3.0 |
+| rocker/rstudio image scripts | GPL-2.0-or-later |
 | Ubuntu 24.04 packages | GPL/LGPL/mixed |
 | Pixi | BSD-3-Clause |
 | OpenCode | MIT |
