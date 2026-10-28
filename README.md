@@ -11,6 +11,7 @@ setup.
 | --- | --- | --- | --- | --- |
 | code-server | [`code-server/`](code-server/) | `codercom/code-server:4.143.1-noble` | `8080` | Root runtime, direct `apt`, Zsh/Oh My Zsh, Pixi, OpenCode, nf-core extension pack, Dark Modern; auth handled by the platform |
 | rstudio | [`rstudio/`](rstudio/) | `rocker/rstudio:4.6.1` | `8787` | RStudio Server with Pixi R 4.6.1, Zsh/Oh My Zsh, CRAN/Pixi package installs; auth handled by the platform |
+| jupyterlab | [`jupyterlab/`](jupyterlab/) | `ubuntu:26.04` | `8888` | JupyterLab from Pixi with Pixi Python/R kernels, Zsh/Oh My Zsh, no app auth |
 
 ## Repository conventions
 
@@ -146,9 +147,11 @@ The images include third-party components under their own licenses:
 | --- | --- |
 | code-server and the official image build scripts | MIT |
 | RStudio Server | AGPL-3.0 |
+| JupyterLab / Jupyter Server | BSD-3-Clause |
+| Python | PSF-2.0 |
 | R | GPL-2.0 / GPL-3.0 |
 | rocker/rstudio image scripts | GPL-2.0-or-later |
-| Ubuntu 24.04 packages | GPL/LGPL/mixed |
+| Ubuntu packages | GPL/LGPL/mixed |
 | Pixi | BSD-3-Clause |
 | OpenCode | MIT |
 | Oh My Zsh | MIT |
