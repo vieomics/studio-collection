@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+
+name: studio-jupyterlab
+
+services:
+  jupyterlab:
+    build:
+      context: .
+      args:
+        PIXI_VERSION: ${PIXI_VERSION:-0.83.0}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.13}
+        R_VERSION: ${R_VERSION:-4.5.3}
+    image: studio-collection/jupyterlab:${JUPYTER_VERSION:-2026-10-26}
+    container_name: studio-jupyterlab
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes:
+      - ./data:/home/jovyan
+    restart: unless-stopped
