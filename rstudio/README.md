@@ -155,8 +155,9 @@ academic-only or non-commercial.
 
 ## Notes
 
-- The base image is large (~5–6 GB uncompressed with the Pixi R environment and
-  RStudio Server). Check `docker image ls` after building.
+- The base image is large because it includes RStudio Server and the Pixi R
+  environment. The Pixi package cache is removed at build time; check
+  `docker image ls` after building.
 - RStudio Server does not use Jupyter/IRkernel; its R session is the R kernel.
 - The container logs may show harmless `chpasswd` warnings because Rocker's init
   still tries to set a Unix password while authentication is disabled. RStudio

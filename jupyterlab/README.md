@@ -16,7 +16,7 @@ Pixi. Python and R kernels come from Pixi environments.
 | Authentication | Disabled by design; platform/proxy handles access control |
 | Persistent path | `/home/jovyan` |
 | Kernel specs | `/usr/local/share/jupyter` |
-| Built image size | ~3.9 GB |
+| Built image size | Pixi cache removed at build time; check `docker image ls` |
 
 ## What is in the image
 
