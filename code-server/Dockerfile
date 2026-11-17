@@ -15,8 +15,9 @@
 #   - Dark Modern first-boot theme
 #   - code-server authentication disabled by design (platform/proxy handles auth)
 #
-# The container runs as root so users can run `apt install` directly in the
-# integrated terminal.
+# The container runs as the unprivileged coder user (UID 1000), matching the
+# upstream image. The coder user keeps passwordless sudo, so `sudo apt install`
+# still works from the integrated terminal.
 
 FROM codercom/code-server:4.143.1-noble
 
@@ -102,9 +103,12 @@ COPY LICENSE /usr/share/doc/studio-collection/LICENSE
 COPY THIRD_PARTY_NOTICES.md /usr/share/doc/studio-collection/THIRD_PARTY_NOTICES.md
 COPY LICENSES/ /usr/share/doc/studio-collection/LICENSES/
 
-# The upstream image gives coder passwordless sudo. The app runs as root here,
-# so that rule is redundant.
-RUN rm -f /etc/sudoers.d/nopasswd
+# Run as the unprivileged coder user (UID 1000), as the upstream image does.
+# Passwordless sudo from the upstream image is kept for runtime installs.
+RUN chown -R coder:coder /home/coder
+
+USER coder
+WORKDIR /home/coder
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
   CMD curl -fsS http://127.0.0.1:8080/healthz >/dev/null || exit 1
