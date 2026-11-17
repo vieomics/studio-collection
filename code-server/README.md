@@ -1,7 +1,8 @@
 # Studio: code-server
 
 Browser-based VS Code for Omicslab, built on the official Coder code-server
-image. The container runs as root so users can `apt install` directly.
+image. The container runs as the unprivileged `coder` user; `sudo apt install`
+still works from the integrated terminal.
 
 ## At a glance
 
@@ -10,7 +11,7 @@ image. The container runs as root so users can `apt install` directly.
 | Upstream image | `codercom/code-server:4.143.1-noble` |
 | Application | code-server `4.143.1` (VS Code `1.143.1`) |
 | Base OS | Ubuntu `24.04.5` LTS |
-| User | `root` inside the container |
+| User | `coder` (UID/GID `1000`) inside the container |
 | Shell | `zsh` + Oh My Zsh |
 | Web UI | `http://<host>:8080` (no login page) |
 | Authentication | Disabled by design; platform/proxy handles access control |
@@ -68,26 +69,28 @@ docker run -d \
   studio-collection/code-server:4.143.1
 ```
 
-## Root user
+## User and permissions
 
-- `apt install <package>` works directly in the integrated terminal.
-- Container root is **not** host root. Do not run the container privileged or
-  mount the Docker socket unless you intentionally need that.
-- Files written to `./data` are root-owned. If you need to manage them as your
-  host user:
-  `sudo chown -R "$(id -u):$(id -g)" code-server/data`
-- There is no PUID/PGID or sudo-password wrapper. The upstream entrypoint runs
-  with `--auth none`, so the IDE opens directly.
-- `zsh` is the default shell for `root` and `coder`; `SHELL=/usr/bin/zsh` is set
-  and the VS Code terminal profile is configured for zsh.
+- The image runs as `coder` (UID/GID `1000`) and keeps the upstream passwordless
+  sudo rule, so `sudo apt install <package>` works in the integrated terminal.
+- Files written to `./data` are owned by UID `1000`. If your host user has a
+  different UID, either give the directory to that ID:
+  `sudo chown -R 1000:1000 code-server/data`
+  or run the container with your own IDs:
+  `docker run --user "$(id -u):$(id -g)" ...`
+- The container user is **not** a privileged host user. Do not run the container
+  privileged or mount the Docker socket unless you intentionally need that.
+- The upstream entrypoint runs with `--auth none`, so the IDE opens directly.
+- `zsh` is the default shell for `coder`; `SHELL=/usr/bin/zsh` is set and the VS
+  Code terminal profile is configured for zsh.
 
 ## Security notes
 
 - The image is single-user. Run one container per user/session; there is no
   multi-user isolation inside the container.
 - **There is no built-in authentication.** Anyone who can reach port 8080 gets
-  the IDE and a root shell in the container. Put it behind the Omicslab
-  platform/proxy, TLS, OIDC/SSO, or a private network.
+  the IDE and a shell as `coder` (with passwordless sudo) in the container. Put
+  it behind the Omicslab platform/proxy, TLS, OIDC/SSO, or a private network.
 - Do not expose port 8080 directly to the internet.
 - Packages installed with `apt` at runtime are lost when the container is
   recreated. Put durable tools in the Dockerfile.

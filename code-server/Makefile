@@ -41,6 +41,7 @@ test:
 	curl -fsS http://127.0.0.1:$(PORT)/healthz >/dev/null
 	test "$$(curl -sSL -o /dev/null -w '%{http_code}' http://127.0.0.1:$(PORT)/)" = "200"
 	docker logs $(CONTAINER) 2>&1 | grep -q "Authentication is disabled"
+	docker exec $(CONTAINER) sh -c 'test "$$(id -un)" = coder'
 	docker exec $(CONTAINER) sh -c 'test "$$SHELL" = /usr/bin/zsh'
 	docker exec $(CONTAINER) zsh -ic 'echo $$ZSH' | grep -q /opt/oh-my-zsh
 	docker exec $(CONTAINER) zsh -ic 'echo $$plugins' | grep -q zsh-syntax-highlighting
